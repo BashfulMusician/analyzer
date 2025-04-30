@@ -10,7 +10,7 @@ analyzer_path = os.path.dirname(__file__) + '/../../goblint'
 def parser():
     parser = argparse.ArgumentParser(description='Run goblint multiple times with different configurations until timeout.')
     parser.add_argument('-v', '--verbose', action='store_true', help='generate verbose output.')
-    parser.add_argument('-t', '--timeout', type=int, default=120, help='Time until analysis timeout in seconds.')
+    parser.add_argument('-t', '--timeout', type=int, default=450, help='Time until analysis timeout in seconds.')
     parser.add_argument('--runtime', type=int, default=898, help='Time limit for restart script in seconds.')
     parser.add_argument('-a', '--autotune', action='store_true', help='Auto adjust first config after every restart for LIMIT runs or RUNTIME seconds.')
     parser.add_argument('--a_limit', type=int, metavar='LIMIT', default=2, help='limit how many iterations autotune is used for.')
