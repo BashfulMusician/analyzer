@@ -1,90 +1,110 @@
 {
-    "ana": {
-      "sv-comp": {
-        "enabled": true,
-        "functions": true
-      },
-      "int": {
-        "def_exc": true,
-        "enums": false,
-        "interval": true
-      },
-      "float": {
-        "interval": true
-      },
-      "activated": [
-        "base",
-        "threadid",
-        "threadflag",
-        "threadreturn",
-        "mallocWrapper",
-        "mutexEvents",
-        "mutex",
-        "access",
-        "race",
-        "escape",
-        "expRelation",
-        "mhp",
-        "assert",
-        "var_eq",
-        "symb_locks",
-        "region",
-        "thread",
-        "threadJoins",
-        "abortUnless"
-      ],
-      "path_sens": [
-        "mutex",
-        "malloc_null",
-        "uninit",
-        "expsplit",
-        "activeSetjmp",
-        "memLeak",
-        "threadflag"
-      ],
-      "autotune": {
-        "enabled": true,
-        "activated": [
-          "singleThreaded",
-          "mallocWrappers",
-          "noRecursiveIntervals",
-          "enums",
-          "congruence",
-          "octagon",
-          "wideningThresholds",
-          "loopUnrollHeuristic",
-          "memsafetySpecification",
-          "termination",
-          "tmpSpecialAnalysis"
-        ]
-      }
+  "ana": {
+    "sv-comp": {
+      "enabled": true,
+      "functions": true
     },
-    "witness": {
-      "graphml": {
-        "enabled": true,
-        "id": "enumerate",
-        "unknown": false
-      },
-      "yaml": {
-        "enabled": true,
-        "format-version": "2.0",
-        "entry-types": [
-          "invariant_set"
-        ],
-        "invariant-types": [
-          "loop_invariant"
-        ]
-      },
-      "invariant": {
-        "loop-head": true,
-        "after-lock": false,
-        "other": false,
-        "accessed": false,
-        "exact": true
-      }
+    "int": {
+      "def_exc": true,
+      "enums": true,
+      "interval": true,
+      "congruence": true,
+      "refinement": "fixpoint",
+      "interval_threshold_widening" : true,
+      "def_exc_widen_by_join" : true
     },
-    "pre": {
-      "enabled": false
+    "path_sens" : [ "mutex", "malloc_null", "uninit","threadflag" ],
+    "apron" : {
+      "domain": "octagon",
+      "threshold_widening": true,
+      "strengthening": true
+    },
+    "relation" : {
+      "privatization": "mutex-meet-tid-cluster12"
+    },
+    "activated": [
+      "base",
+      "threadid",
+      "threadflag",
+      "threadreturn",
+      "mallocWrapper",
+      "mutexEvents",
+      "mutex",
+      "access",
+      "race",
+      "escape",
+      "expRelation",
+      "mhp",
+      "assert",
+      "pthreadMutexType",
+      "var_eq",
+      "symb_locks",
+      "region",
+      "thread",
+      "apron",
+      "threadJoins",
+      "abortUnless"
+    ],
+    "context": {
+      "widen": false
+    },
+    "malloc": {
+      "wrappers": [
+        "kmalloc",
+        "__kmalloc",
+        "usb_alloc_urb",
+        "__builtin_alloca",
+        "kzalloc",
+        "ldv_malloc",
+        "kzalloc_node",
+        "ldv_zalloc",
+        "kmalloc_array",
+        "kcalloc"
+      ]
+    },
+    "base": {
+      "arrays": {
+        "domain": "partitioned"
+      },
+      "structs" : {
+        "domain" : "combined-sk"
+      },
+      "strings": {
+        "domain": "disjoint"
+      }
     }
+  },
+  "exp": {
+    "region-offsets": true
+  },
+  "solver": "td3",
+  "witness": {
+    "graphml": {
+      "enabled": true,
+      "id": "enumerate",
+      "unknown": false
+    },
+    "yaml": {
+      "enabled": true,
+      "format-version": "2.0",
+      "entry-types": [
+        "invariant_set"
+      ],
+      "invariant-types": [
+        "loop_invariant"
+      ]
+    },
+    "invariant": {
+      "loop-head": true,
+      "after-lock": false,
+      "other": false,
+      "accessed": false,
+      "exact": true
+    }
+  },
+  "pre": {
+    "enabled": false
   }
+}
+
   

@@ -4,6 +4,8 @@ import os
 import signal
 import time
 
+SV_COMP_TIMEOUT = 900
+TIME_REQUIRED_FOR_REPORT = 2
 
 analyzer_path = os.path.dirname(__file__) + '/../../goblint'
 
@@ -11,7 +13,7 @@ def parser():
     parser = argparse.ArgumentParser(description='Run goblint multiple times with different configurations until timeout.')
     parser.add_argument('-v', '--verbose', action='store_true', help='generate verbose output.')
     parser.add_argument('-t', '--timeout', type=int, default=450, help='Time until analysis timeout in seconds.')
-    parser.add_argument('--runtime', type=int, default=898, help='Time limit for restart script in seconds.')
+    parser.add_argument('--runtime', type=int, default=SV_COMP_TIMEOUT - TIME_REQUIRED_FOR_REPORT, help='Time limit for restart script in seconds.')
     parser.add_argument('-a', '--autotune', action='store_true', help='Auto adjust first config after every restart for LIMIT runs or RUNTIME seconds.')
     parser.add_argument('--a_limit', type=int, metavar='LIMIT', default=2, help='limit how many iterations autotune is used for.')
     parser.add_argument('--spec', metavar='property.prp', help='Path or string for a specification for SV-COMP.')
@@ -20,7 +22,7 @@ def parser():
     parser.add_argument('--witness.yaml.validate', help='Architecture information to pass to Gobilnt.')
     parser.add_argument('--witness.yaml.unassume', help='Architecture information to pass to Gobilnt.')
     parser.add_argument('-c','--conf', nargs='+', help='configurations to be used.')
-    parser.add_argument('-f','--file', help='file to be analyzed.')
+    parser.add_argument('file', help='file to be analyzed.')
 
     args = parser.parse_args()
     assert args.timeout > 0, "Timeout must be a positive integer."
@@ -28,9 +30,14 @@ def parser():
     return args
 
 
+class TimeOutException(Exception):
+    def __init__(self, message):
+        super(TimeOutException, self).__init__(message)
+
+
 def handler(signum, frame):
     print("Restart time limit reached!")
-    raise Exception("timeout")
+    raise TimeOutException("timeout", )
 
 def loop(args, timing=False):
     firstrun = True
@@ -77,7 +84,8 @@ def loop(args, timing=False):
                 firstrunTime = end - start
 
             # check and print output
-            if (error_message not in result.stdout):
+            if (error_message not in result.stdout and "[Error][Analyzer] About to crash" not in result.stdout):
+                signal.alarm(0)
                 print(result.stdout)
                 break
             else:
@@ -85,7 +93,7 @@ def loop(args, timing=False):
                 print("Error: Restarting")
         else:
             print(result.stdout)
-    except:
+    except TimeOutException:
         print(last_output)
 
     if timing:

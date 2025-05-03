@@ -83,6 +83,32 @@ def conflist_timings(property):
                     i += 1
 
 
+def conflist_expensive_timings(property):
+    outfile = open(os.path.dirname(__file__) + '/data/conflist_expensive_' + property + '_timings.txt', 'w')
+    i = 1
+    for file in os.listdir(svbench_path + '/c/goblint-regression'):
+        if file.endswith('.yml'):
+            spec = yaml.safe_load(open(svbench_path + '/c/goblint-regression/' + file, 'r'))
+            for p in spec["properties"]:
+                if p["property_file"] == "../properties/" + property + ".prp" and "expected_verdict" in p:
+                    args = argparse.Namespace(conf=[os.path.dirname(__file__) + '/start.json',os.path.dirname(__file__) + '/../../conf/svcomp.json', os.path.dirname(__file__) + '/expensive.json'],file=svbench_path + '/c/goblint-regression/' + spec['input_files'],spec=svbench_path + '/c/properties/' + property + '.prp',runtime=120,timeout=15,a_limit=2,verbose=False,autotune=False,architecture=None)
+                    setattr(args,"witness.yaml.validate",None)
+                    setattr(args,"witness.yaml.unassume",None)
+                    start = time.perf_counter()
+                    first, firstTime, output = restart.loop(args, timing=True)
+                    end = time.perf_counter()
+
+                    result = "empty"
+                    if "SV-COMP result: unknown" in output.stdout:
+                        result = "unknown"
+                    if "SV-COMP result: true" in output.stdout:
+                        result = "True"
+                    if "SV-COMP result: false" in output.stdout:
+                        result = "False"
+                    outfile.write(str(i) + ',' + spec['input_files'] + ',' + str(end - start) + ',' + str(first) + ',' + str(firstTime) + ',' + str(result) + ',' + str(p["expected_verdict"]) + '\n')
+                    i += 1
+
+
 def goblint_timings(property):
     outfile = open(os.path.dirname(__file__) + '/data/goblint_' + property + '_timings.txt', 'w')
     i = 1
@@ -92,8 +118,9 @@ def goblint_timings(property):
             for p in spec["properties"]:
                 if p["property_file"] == "../properties/" + property + ".prp" and "expected_verdict" in p:
                     start = time.perf_counter()
-                    output = subprocess.run([analyzer_path, '--conf', os.path.dirname(__file__) + '/../../conf/svcomp.json', '--set', 'restart.enabled', 'true', '--set', 'ana.specification', svbench_path + '/c/properties/no-data-race.prp', svbench_path + '/c/goblint-regression/' + spec['input_files']], capture_output=True, text=True)
+                    output = subprocess.run([analyzer_path, '--conf', os.path.dirname(__file__) + '/../../conf/svcomp.json', '--set', 'restart.enabled', 'true', '--set', 'ana.specification', svbench_path + '/c/properties/' + property + '.prp', svbench_path + '/c/goblint-regression/' + spec['input_files']], capture_output=True, text=True)
                     end = time.perf_counter()
+                    print(output.stdout)
                     result = "empty"
                     if "SV-COMP result: unknown" in output.stdout:
                         result = "unknown"
@@ -184,6 +211,7 @@ def main ():
     parser.add_argument('--overhead', action='store_true', help='Measure overhead time of restart functionality.')
     parser.add_argument('--autotune_timings', action='store_true', help='test.')
     parser.add_argument('--conflist_timings', action='store_true', help='test.')
+    parser.add_argument('--conflist_expensive_timings', action='store_true', help='test.')
     parser.add_argument('--goblint_timings', action='store_true', help='test.')
     parser.add_argument('--test', action='store_true', help='test.')
     args = parser.parse_args()
@@ -198,6 +226,10 @@ def main ():
         #conflist_timings("no-data-race")
         conflist_timings("no-overflow")
         conflist_timings("unreach-call")
+    if args.conflist_expensive_timings:
+        conflist_expensive_timings("no-data-race")
+        conflist_expensive_timings("no-overflow")
+        conflist_expensive_timings("unreach-call")
     if args.autotune_timings:
         autotune_timings("no-data-race")
         autotune_timings("no-overflow")
@@ -206,6 +238,7 @@ def main ():
         goblint_timings("no-data-race")
         goblint_timings("no-overflow")
         goblint_timings("unreach-call")
+    return
 
 if __name__ == "__main__":
     main()
