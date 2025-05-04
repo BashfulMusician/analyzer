@@ -72,6 +72,22 @@
       "strings": {
         "domain": "disjoint"
       }
+    },
+    "autotune": {
+      "enabled": true,
+      "activated": [
+        "singleThreaded",
+        "mallocWrappers",
+        "noRecursiveIntervals",
+        "enums",
+        "congruence",
+        "octagon",
+        "wideningThresholds",
+        "loopUnrollHeuristic",
+        "memsafetySpecification",
+        "termination",
+        "tmpSpecialAnalysis"
+      ]
     }
   },
   "exp": {

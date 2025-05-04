@@ -18,9 +18,9 @@ def parser():
     parser.add_argument('--a_limit', type=int, metavar='LIMIT', default=2, help='limit how many iterations autotune is used for.')
     parser.add_argument('--spec', metavar='property.prp', help='Path or string for a specification for SV-COMP.')
     parser.add_argument('--version', action='store_true', help='Print Goblint version information.')
-    parser.add_argument('--architecture', help='Architecture information to pass to Gobilnt.')
-    parser.add_argument('--witness.yaml.validate', help='Architecture information to pass to Gobilnt.')
-    parser.add_argument('--witness.yaml.unassume', help='Architecture information to pass to Gobilnt.')
+    parser.add_argument('--architecture', help='Architecture information to pass to Gobilnt for SV-COMP.')
+    parser.add_argument('--witness.yaml.validate', help='Witness information for SV-COMP.')
+    parser.add_argument('--witness.yaml.unassume', help='Witness information for SV-COMP.')
     parser.add_argument('-c','--conf', nargs='+', help='configurations to be used.')
     parser.add_argument('file', help='file to be analyzed.')
 
@@ -71,6 +71,7 @@ def loop(args, timing=False):
             if args.autotune and i > 0: gob_args.extend(["--set", "restart.autotune", "true"])
             if args.spec != None: gob_args.extend(["--set", "ana.specification", args.spec])
             if args.architecture != None: gob_args.extend(["--set", "exp.architecture", args.architecture])
+            # getattr is used since argparse otherwise doesn't work with dots in flag names
             if getattr(args, "witness.yaml.validate") != None: gob_args.extend(["--set", "witness.yaml.validate", getattr(args, "witness.yaml.validate")])
             if getattr(args, "witness.yaml.unassume") != None: gob_args.extend(["--set", "witness.yaml.unassume", getattr(args, "witness.yaml.unassume")])
 

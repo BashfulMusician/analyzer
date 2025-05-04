@@ -83,6 +83,32 @@ def conflist_timings(property):
                     i += 1
 
 
+def conflist_coreutils(property):
+    outfile = open(os.path.dirname(__file__) + '/data/conflist_' + property + '_coreutils.txt', 'w')
+    i = 1
+    for file in os.listdir(svbench_path + '/c/goblint-coreutils'):
+        if file.endswith('.yml'):
+            spec = yaml.safe_load(open(svbench_path + '/c/goblint-coreutils/' + file, 'r'))
+            for p in spec["properties"]:
+                if p["property_file"] == "../properties/" + property + ".prp" and "expected_verdict" in p:
+                    args = argparse.Namespace(conf=[os.path.dirname(__file__) + '/start.json',os.path.dirname(__file__) + '/../../conf/svcomp.json'],file=svbench_path + '/c/goblint-coreutils/' + spec['input_files'],spec=svbench_path + '/c/properties/' + property + '.prp',runtime=300,timeout=100,a_limit=2,verbose=False,autotune=False,architecture=None)
+                    setattr(args,"witness.yaml.validate",None)
+                    setattr(args,"witness.yaml.unassume",None)
+                    start = time.perf_counter()
+                    first, firstTime, output = restart.loop(args, timing=True)
+                    end = time.perf_counter()
+
+                    result = "empty"
+                    if "SV-COMP result: unknown" in output.stdout:
+                        result = "unknown"
+                    if "SV-COMP result: true" in output.stdout:
+                        result = "True"
+                    if "SV-COMP result: false" in output.stdout:
+                        result = "False"
+                    outfile.write(str(i) + ',' + spec['input_files'] + ',' + str(end - start) + ',' + str(first) + ',' + str(firstTime) + ',' + str(result) + ',' + str(p["expected_verdict"]) + '\n')
+                    i += 1
+
+
 def conflist_expensive_timings(property):
     outfile = open(os.path.dirname(__file__) + '/data/conflist_expensive_' + property + '_timings.txt', 'w')
     i = 1
@@ -92,6 +118,32 @@ def conflist_expensive_timings(property):
             for p in spec["properties"]:
                 if p["property_file"] == "../properties/" + property + ".prp" and "expected_verdict" in p:
                     args = argparse.Namespace(conf=[os.path.dirname(__file__) + '/start.json',os.path.dirname(__file__) + '/../../conf/svcomp.json', os.path.dirname(__file__) + '/expensive.json'],file=svbench_path + '/c/goblint-regression/' + spec['input_files'],spec=svbench_path + '/c/properties/' + property + '.prp',runtime=120,timeout=15,a_limit=2,verbose=False,autotune=False,architecture=None)
+                    setattr(args,"witness.yaml.validate",None)
+                    setattr(args,"witness.yaml.unassume",None)
+                    start = time.perf_counter()
+                    first, firstTime, output = restart.loop(args, timing=True)
+                    end = time.perf_counter()
+
+                    result = "empty"
+                    if "SV-COMP result: unknown" in output.stdout:
+                        result = "unknown"
+                    if "SV-COMP result: true" in output.stdout:
+                        result = "True"
+                    if "SV-COMP result: false" in output.stdout:
+                        result = "False"
+                    outfile.write(str(i) + ',' + spec['input_files'] + ',' + str(end - start) + ',' + str(first) + ',' + str(firstTime) + ',' + str(result) + ',' + str(p["expected_verdict"]) + '\n')
+                    i += 1
+
+
+def conflist_expensive_coreutils(property):
+    outfile = open(os.path.dirname(__file__) + '/data/conflist_expensive_' + property + '_coreutils.txt', 'w')
+    i = 1
+    for file in os.listdir(svbench_path + '/c/goblint-coreutils'):
+        if file.endswith('.yml'):
+            spec = yaml.safe_load(open(svbench_path + '/c/goblint-coreutils/' + file, 'r'))
+            for p in spec["properties"]:
+                if p["property_file"] == "../properties/" + property + ".prp" and "expected_verdict" in p:
+                    args = argparse.Namespace(conf=[os.path.dirname(__file__) + '/start.json',os.path.dirname(__file__) + '/../../conf/svcomp.json', os.path.dirname(__file__) + '/expensive.json'],file=svbench_path + '/c/goblint-coreutils/' + spec['input_files'],spec=svbench_path + '/c/properties/' + property + '.prp',runtime=300,timeout=60,a_limit=2,verbose=False,autotune=False,architecture=None)
                     setattr(args,"witness.yaml.validate",None)
                     setattr(args,"witness.yaml.unassume",None)
                     start = time.perf_counter()
@@ -119,6 +171,29 @@ def goblint_timings(property):
                 if p["property_file"] == "../properties/" + property + ".prp" and "expected_verdict" in p:
                     start = time.perf_counter()
                     output = subprocess.run([analyzer_path, '--conf', os.path.dirname(__file__) + '/../../conf/svcomp.json', '--set', 'restart.enabled', 'true', '--set', 'ana.specification', svbench_path + '/c/properties/' + property + '.prp', svbench_path + '/c/goblint-regression/' + spec['input_files']], capture_output=True, text=True)
+                    end = time.perf_counter()
+                    print(output.stdout)
+                    result = "empty"
+                    if "SV-COMP result: unknown" in output.stdout:
+                        result = "unknown"
+                    if "SV-COMP result: true" in output.stdout:
+                        result = "True"
+                    if "SV-COMP result: false" in output.stdout:
+                        result = "False"
+                    outfile.write(str(i) + ',' + spec['input_files'] + ',' + str(end - start) + ',' + str(result) + ',' + str(p["expected_verdict"]) + '\n')
+                    i += 1
+
+
+def goblint_coreutils(property):
+    outfile = open(os.path.dirname(__file__) + '/data/goblint_' + property + '_coreutils.txt', 'w')
+    i = 1
+    for file in os.listdir(svbench_path + '/c/goblint-coreutils'):
+        if file.endswith('.yml'):
+            spec = yaml.safe_load(open(svbench_path + '/c/goblint-coreutils/' + file, 'r'))
+            for p in spec["properties"]:
+                if p["property_file"] == "../properties/" + property + ".prp" and "expected_verdict" in p:
+                    start = time.perf_counter()
+                    output = subprocess.run([analyzer_path, '--conf', os.path.dirname(__file__) + '/../../conf/svcomp.json', '--set', 'restart.enabled', 'true', '--set', 'restart.timeout', '300', '--set', 'ana.specification', svbench_path + '/c/properties/' + property + '.prp', svbench_path + '/c/goblint-coreutils/' + spec['input_files']], capture_output=True, text=True)
                     end = time.perf_counter()
                     print(output.stdout)
                     result = "empty"
@@ -211,8 +286,11 @@ def main ():
     parser.add_argument('--overhead', action='store_true', help='Measure overhead time of restart functionality.')
     parser.add_argument('--autotune_timings', action='store_true', help='test.')
     parser.add_argument('--conflist_timings', action='store_true', help='test.')
+    parser.add_argument('--conflist_coreutils', action='store_true', help='test.')
     parser.add_argument('--conflist_expensive_timings', action='store_true', help='test.')
+    parser.add_argument('--conflist_expensive_coreutils', action='store_true', help='test.')
     parser.add_argument('--goblint_timings', action='store_true', help='test.')
+    parser.add_argument('--goblint_coreutils', action='store_true', help='test.')
     parser.add_argument('--test', action='store_true', help='test.')
     args = parser.parse_args()
 
@@ -238,6 +316,18 @@ def main ():
         goblint_timings("no-data-race")
         goblint_timings("no-overflow")
         goblint_timings("unreach-call")
+    if args.conflist_coreutils:
+        conflist_coreutils("no-data-race")
+        conflist_coreutils("no-overflow")
+        conflist_coreutils("unreach-call")
+    if args.conflist_expensive_coreutils:
+        conflist_expensive_coreutils("no-data-race")
+        conflist_expensive_coreutils("no-overflow")
+        conflist_expensive_coreutils("unreach-call")
+    if args.goblint_coreutils:
+        goblint_coreutils("no-data-race")
+        goblint_coreutils("no-overflow")
+        goblint_coreutils("unreach-call")
     return
 
 if __name__ == "__main__":

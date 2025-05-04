@@ -16,6 +16,7 @@ def autotune_time(property):
     print(np.average(new_z2[-10:]))
 
 def goblint_stats(property):
+    print("Goblint:")
     x1,y1,z1,result,verdict = np.genfromtxt(os.path.dirname(__file__) + '/data/goblint_' + property + '_timings.txt', delimiter=',', unpack=True, dtype=None)
     newz, newf= zip(*sorted(zip(z1,x1)))
     print("Goblint average: " + str(np.average(z1)))
@@ -40,6 +41,9 @@ def goblint_stats(property):
             else:
                 gob_false_incorrect += 1
 
+    
+    print("Goblint total time: " + str(np.sum(z1)))
+    print("Goblint mean time: " + str(np.mean(newz)))
     print("Goblint correct true answers: " + str(gob_true_correct))
     print("Goblint correct false answers: " + str(gob_false_correct))
     print("Goblint incorrect true answers: " + str(gob_true_incorrect))
@@ -48,6 +52,7 @@ def goblint_stats(property):
     print("Goblint empty answers: " + str(gob_empty))
 
 def conflist_stats(property):
+    print("conflist:")
     x1,y1,z1,_,_ = np.genfromtxt(os.path.dirname(__file__) + '/data/goblint_' + property + '_timings.txt', delimiter=',', unpack=True, dtype=None)
     x2,y2,z2, firstrun, firstruntime, result, verdict = np.genfromtxt(os.path.dirname(__file__) + '/data/conflist_' + property + '_timings.txt', delimiter=',', unpack=True, dtype=None)
     _, newf, newft, newx = zip(*sorted(zip(z1,firstrun, firstruntime, x1)))
@@ -76,15 +81,21 @@ def conflist_stats(property):
             else:
                 conf_false_incorrect += 1
 
+    
+    print("Conflist total time: " + str(np.sum(z2)))
+    print("Conflist mean time: " + str(np.mean(new_z2)))
     print("Conflist correct true answers: " + str(conf_true_correct))
     print("Conflist correct false answers: " + str(conf_false_correct))
     print("Conflist incorrect true answers: " + str(conf_true_incorrect))
     print("Conflist incorrect false answers: " + str(conf_false_incorrect))
     print("Conflist unknown answers: " + str(conf_unknown))
     print("Conflist empty answers: " + str(conf_empty))
+    print("conflist total first run: " + str(np.sum(firstrun)))
+    print("conflist average first run time: " + str(np.average(firstruntime)))
 
 
 def conflist_expensive_stats(property):
+    print("conflist expensive:")
     x1,y1,z1,_,_ = np.genfromtxt(os.path.dirname(__file__) + '/data/goblint_' + property + '_timings.txt', delimiter=',', unpack=True, dtype=None)
     x2,y2,z2, firstrun, firstruntime, result, verdict = np.genfromtxt(os.path.dirname(__file__) + '/data/conflist_expensive_' + property + '_timings.txt', delimiter=',', unpack=True, dtype=None)
     _, newf, newft, newx = zip(*sorted(zip(z1,firstrun, firstruntime, x1)))
@@ -113,12 +124,60 @@ def conflist_expensive_stats(property):
             else:
                 conf_false_incorrect += 1
 
+    
+    print("Conflist total time: " + str(np.sum(z2)))
+    print("Conflist mean time: " + str(np.mean(new_z2)))
     print("Conflist correct true answers: " + str(conf_true_correct))
     print("Conflist correct false answers: " + str(conf_false_correct))
     print("Conflist incorrect true answers: " + str(conf_true_incorrect))
     print("Conflist incorrect false answers: " + str(conf_false_incorrect))
     print("Conflist unknown answers: " + str(conf_unknown))
     print("Conflist empty answers: " + str(conf_empty))
+    print("conflist total first run: " + str(np.sum(firstrun)))
+    print("conflist average first run time: " + str(np.average(firstruntime)))
+
+
+def autotune_stats(property):
+    print("autotune:")
+    x1,y1,z1,_,_ = np.genfromtxt(os.path.dirname(__file__) + '/data/goblint_' + property + '_timings.txt', delimiter=',', unpack=True, dtype=None)
+    x2,y2,z2, firstrun, firstruntime, result, verdict = np.genfromtxt(os.path.dirname(__file__) + '/data/autotune_' + property + '_timings.txt', delimiter=',', unpack=True, dtype=None)
+    _, newf, newft, newx = zip(*sorted(zip(z1,firstrun, firstruntime, x1)))
+    new_z1, new_z2 = zip(*sorted(zip(z1,z2)))
+    print("Goblint average: " + str(np.average(z1)))
+    print("autotune average: " + str(np.average(z2)))
+    print("Goblint average 10 slowest: " + str(np.average(new_z1[-10:])))
+    print("autotune average 10 slowest: " + str(np.average(new_z2[-10:])))
+
+    conf_true_correct = 0
+    conf_false_correct = 0
+    conf_true_incorrect = 0
+    conf_false_incorrect = 0
+    conf_unknown = result.tolist().count("unknown")
+    conf_empty = result.tolist().count("empty")
+
+    for i in range(len(result)):
+        if result[i] == "True":
+            if str(verdict[i]) == result[i]:
+                conf_true_correct += 1
+            else:
+                conf_true_incorrect += 1
+        elif result[i] == "False":
+            if str(verdict[i]) == result[i]:
+                conf_false_correct += 1
+            else:
+                conf_false_incorrect += 1
+
+    
+    print("autotune total time: " + str(np.sum(z2)))
+    print("autotune mean time: " + str(np.mean(new_z2)))
+    print("autotune correct true answers: " + str(conf_true_correct))
+    print("autotune correct false answers: " + str(conf_false_correct))
+    print("autotune incorrect true answers: " + str(conf_true_incorrect))
+    print("autotune incorrect false answers: " + str(conf_false_incorrect))
+    print("autotune unknown answers: " + str(conf_unknown))
+    print("autotune empty answers: " + str(conf_empty))
+    print("autotune total first run: " + str(np.sum(firstrun)))
+    print("autotune average first run time: " + str(np.average(firstruntime)))
 
 
 def firstrun_toptime(property):
@@ -207,17 +266,20 @@ def main():
     #conflist_expensive_goblint_cumsum("no-overflow")
     #conflist_expensive_goblint_cumsum("unreach-call")
 
-    #conflist_stats("no-data-race")
-    #conflist_stats("no-overflow")
-    #conflist_stats("unreach-call")
-
+    autotune_stats("no-data-race")
+    conflist_stats("no-data-race")
     conflist_expensive_stats("no-data-race")
-    conflist_expensive_stats("no-overflow")
-    conflist_expensive_stats("unreach-call")
+    goblint_stats("no-data-race")
 
-    #goblint_stats("no-data-race")
-    #goblint_stats("no-overflow")
-    #goblint_stats("unreach-call")
+    autotune_stats("no-overflow")
+    conflist_stats("no-overflow")
+    conflist_expensive_stats("no-overflow")
+    goblint_stats("no-overflow")
+
+    autotune_stats("unreach-call")
+    conflist_stats("unreach-call")
+    conflist_expensive_stats("unreach-call")
+    goblint_stats("unreach-call")
     #firstrun_toptime("no-overflow")
     #autotune_time("no-data-race")
     return
