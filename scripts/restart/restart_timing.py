@@ -4,13 +4,13 @@ import time
 import subprocess
 import os
 
-from blinker import Namespace
 import restart
 from prettytable import PrettyTable
 import matplotlib.pyplot as plt
 import numpy as np
 import yaml
 
+coreutils = ["instrumented_cksum_comb.yml", "instrumented_cut_comb.yml", "instrumented_dd_comb.yml", "instrumented_df_comb.yml", "instrumented_du_comb.yml", "instrumented_nohup_comb.yml", "instrumented_ptx_comb.yml", "instrumented_tail_comb.yml"]
 
 analyzer_path = os.path.dirname(__file__) + '/../../goblint'
 restart_path = os.path.dirname(__file__) + "/restart.py"
@@ -39,7 +39,7 @@ def autotune_timings(property):
             spec = yaml.safe_load(open(svbench_path + '/c/goblint-regression/' + file, 'r'))
             for p in spec["properties"]:
                 if p["property_file"] == "../properties/" + property + ".prp" and "expected_verdict" in p:
-                    args = argparse.Namespace(conf=[os.path.dirname(__file__) + '/start.json'],file=svbench_path + '/c/goblint-regression/' + spec['input_files'],spec=svbench_path + '/c/properties/' + property + '.prp',runtime=120,timeout=60,a_limit=2,verbose=False,autotune=True,architecture=None)
+                    args = argparse.Namespace(conf=[os.path.dirname(__file__) + '/svcomp_modified.json'],file=svbench_path + '/c/goblint-regression/' + spec['input_files'],spec=svbench_path + '/c/properties/' + property + '.prp',runtime=120,timeout=60,a_limit=2,verbose=False,autotune=True,architecture=None)
                     setattr(args,"witness.yaml.validate",None)
                     setattr(args,"witness.yaml.unassume",None)
                     start = time.perf_counter()
@@ -87,11 +87,11 @@ def conflist_coreutils(property):
     outfile = open(os.path.dirname(__file__) + '/data/conflist_' + property + '_coreutils.txt', 'w')
     i = 1
     for file in os.listdir(svbench_path + '/c/goblint-coreutils'):
-        if file.endswith('.yml'):
+        if file.endswith('.yml') and file in coreutils:
             spec = yaml.safe_load(open(svbench_path + '/c/goblint-coreutils/' + file, 'r'))
             for p in spec["properties"]:
                 if p["property_file"] == "../properties/" + property + ".prp" and "expected_verdict" in p:
-                    args = argparse.Namespace(conf=[os.path.dirname(__file__) + '/start.json',os.path.dirname(__file__) + '/../../conf/svcomp.json'],file=svbench_path + '/c/goblint-coreutils/' + spec['input_files'],spec=svbench_path + '/c/properties/' + property + '.prp',runtime=300,timeout=100,a_limit=2,verbose=False,autotune=False,architecture=None)
+                    args = argparse.Namespace(conf=[os.path.dirname(__file__) + '/start.json',os.path.dirname(__file__) + '/../../conf/svcomp.json'],file=svbench_path + '/c/goblint-coreutils/' + spec['input_files'],spec=svbench_path + '/c/properties/' + property + '.prp',runtime=900,timeout=300,a_limit=2,verbose=False,autotune=False,architecture=None)
                     setattr(args,"witness.yaml.validate",None)
                     setattr(args,"witness.yaml.unassume",None)
                     start = time.perf_counter()
@@ -139,11 +139,11 @@ def conflist_expensive_coreutils(property):
     outfile = open(os.path.dirname(__file__) + '/data/conflist_expensive_' + property + '_coreutils.txt', 'w')
     i = 1
     for file in os.listdir(svbench_path + '/c/goblint-coreutils'):
-        if file.endswith('.yml'):
+        if file.endswith('.yml') and file in coreutils:
             spec = yaml.safe_load(open(svbench_path + '/c/goblint-coreutils/' + file, 'r'))
             for p in spec["properties"]:
                 if p["property_file"] == "../properties/" + property + ".prp" and "expected_verdict" in p:
-                    args = argparse.Namespace(conf=[os.path.dirname(__file__) + '/start.json',os.path.dirname(__file__) + '/../../conf/svcomp.json', os.path.dirname(__file__) + '/expensive.json'],file=svbench_path + '/c/goblint-coreutils/' + spec['input_files'],spec=svbench_path + '/c/properties/' + property + '.prp',runtime=300,timeout=60,a_limit=2,verbose=False,autotune=False,architecture=None)
+                    args = argparse.Namespace(conf=[os.path.dirname(__file__) + '/start.json',os.path.dirname(__file__) + '/../../conf/svcomp.json', os.path.dirname(__file__) + '/expensive.json'],file=svbench_path + '/c/goblint-coreutils/' + spec['input_files'],spec=svbench_path + '/c/properties/' + property + '.prp',runtime=900,timeout=150,a_limit=2,verbose=False,autotune=False,architecture=None)
                     setattr(args,"witness.yaml.validate",None)
                     setattr(args,"witness.yaml.unassume",None)
                     start = time.perf_counter()
@@ -188,12 +188,12 @@ def goblint_coreutils(property):
     outfile = open(os.path.dirname(__file__) + '/data/goblint_' + property + '_coreutils.txt', 'w')
     i = 1
     for file in os.listdir(svbench_path + '/c/goblint-coreutils'):
-        if file.endswith('.yml'):
+        if file.endswith('.yml') and file in coreutils:
             spec = yaml.safe_load(open(svbench_path + '/c/goblint-coreutils/' + file, 'r'))
             for p in spec["properties"]:
                 if p["property_file"] == "../properties/" + property + ".prp" and "expected_verdict" in p:
                     start = time.perf_counter()
-                    output = subprocess.run([analyzer_path, '--conf', os.path.dirname(__file__) + '/../../conf/svcomp.json', '--set', 'restart.enabled', 'true', '--set', 'restart.timeout', '300', '--set', 'ana.specification', svbench_path + '/c/properties/' + property + '.prp', svbench_path + '/c/goblint-coreutils/' + spec['input_files']], capture_output=True, text=True)
+                    output = subprocess.run([analyzer_path, '--conf', os.path.dirname(__file__) + '/../../conf/svcomp.json', '--set', 'restart.enabled', 'true', '--set', 'restart.timeout', '900', '--set', 'ana.specification', svbench_path + '/c/properties/' + property + '.prp', svbench_path + '/c/goblint-coreutils/' + spec['input_files']], capture_output=True, text=True)
                     end = time.perf_counter()
                     print(output.stdout)
                     result = "empty"

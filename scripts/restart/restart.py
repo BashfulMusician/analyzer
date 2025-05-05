@@ -68,7 +68,7 @@ def loop(args, timing=False):
 
             gob_args = [analyzer_path, '--set', 'restart.enabled', restart, '--set', 'restart.timeout', str(args.timeout), '--conf', c, args.file]
             if args.verbose: gob_args.append("-v")
-            if args.autotune and i > 0: gob_args.extend(["--set", "restart.autotune", "true"])
+            if args.autotune: gob_args.extend(["--set", "restart.autotune", "true"])
             if args.spec != None: gob_args.extend(["--set", "ana.specification", args.spec])
             if args.architecture != None: gob_args.extend(["--set", "exp.architecture", args.architecture])
             # getattr is used since argparse otherwise doesn't work with dots in flag names

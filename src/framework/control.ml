@@ -826,7 +826,7 @@ struct
     if get_string "result" <> "none" then Logs.debug "Generating output: %s" (get_string "result");
 
     Messages.finalize ();
-    if (get_bool "restart.enabled" && get_bool "restart.autotune") then (
+    if (get_bool "restart.enabled") then (
       GobConfig.write_file (Fpath.v "scripts/restart/autotune.conf")
     );
     Timing.wrap "result output" (Result.output (lazy local_xml) gh make_global_fast_xml) file

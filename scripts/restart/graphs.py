@@ -4,16 +4,6 @@ import numpy as np
 import yaml
 import os
 
-def autotune_time(property):
-    x1,y1,z1,_,_ = np.genfromtxt(os.path.dirname(__file__) + '/data/goblint_' + property + '_timings.txt', delimiter=',', unpack=True, dtype=None)
-    x2,y2,z2, _, _, _, _ = np.genfromtxt(os.path.dirname(__file__) + '/data/autotune_' + property + '_timings.txt', delimiter=',', unpack=True, dtype=None)
-    new_z1, new_z2 = zip(*sorted(zip(z1,z2)))
-    print(np.average(z1))
-    print(np.average(z2))
-    print(np.sum(z1))
-    print(np.sum(z2))
-    print(np.average(new_z1[-10:]))
-    print(np.average(new_z2[-10:]))
 
 def goblint_stats(property):
     print("Goblint:")
@@ -180,18 +170,6 @@ def autotune_stats(property):
     print("autotune average first run time: " + str(np.average(firstruntime)))
 
 
-def firstrun_toptime(property):
-    x1,y1,z1,result,verdict = np.genfromtxt(os.path.dirname(__file__) + '/data/goblint_' + property + '_timings.txt', delimiter=',', unpack=True, dtype=None)
-    x2,y2,z2, firstrun, firstruntime, _, _ = np.genfromtxt(os.path.dirname(__file__) + '/data/conflist_' + property + '_timings.txt', delimiter=',', unpack=True, dtype=None)
-    _, newf, newft, newx = zip(*sorted(zip(z1,firstrun, firstruntime, x1)))
-    print(newx[-10:])
-    print(newf[-10:])
-    print(np.average(newft[-10:]))
-    test1,test2 = zip(*sorted(zip(z2,x2)))
-    print(test1[-10:])
-    print(test2[-10:])
-
-
 def autotune_goblint_cumsum(property):
     x1,y1,z1,_,_ = np.genfromtxt(os.path.dirname(__file__) + '/data/goblint_' + property + '_timings.txt', delimiter=',', unpack=True, dtype=None)
     x2,y2,z2, _, _, _, _ = np.genfromtxt(os.path.dirname(__file__) + '/data/autotune_' + property + '_timings.txt', delimiter=',', unpack=True, dtype=None)
@@ -254,9 +232,9 @@ def conflist_expensive_goblint_cumsum(property):
 
 def main():
 
-    #autotune_goblint_cumsum("no-data-race")
-    #autotune_goblint_cumsum("no-overflow")
-    #autotune_goblint_cumsum("unreach-call")
+    autotune_goblint_cumsum("no-data-race")
+    autotune_goblint_cumsum("no-overflow")
+    autotune_goblint_cumsum("unreach-call")
 
     #conflist_goblint_cumsum("no-data-race")
     #conflist_goblint_cumsum("no-overflow")
@@ -267,19 +245,19 @@ def main():
     #conflist_expensive_goblint_cumsum("unreach-call")
 
     autotune_stats("no-data-race")
-    conflist_stats("no-data-race")
-    conflist_expensive_stats("no-data-race")
-    goblint_stats("no-data-race")
+    #conflist_stats("no-data-race")
+    #conflist_expensive_stats("no-data-race")
+    #goblint_stats("no-data-race")
 
     autotune_stats("no-overflow")
-    conflist_stats("no-overflow")
-    conflist_expensive_stats("no-overflow")
-    goblint_stats("no-overflow")
+    #conflist_stats("no-overflow")
+    #conflist_expensive_stats("no-overflow")
+    #goblint_stats("no-overflow")
 
     autotune_stats("unreach-call")
-    conflist_stats("unreach-call")
-    conflist_expensive_stats("unreach-call")
-    goblint_stats("unreach-call")
+    #conflist_stats("unreach-call")
+    #conflist_expensive_stats("unreach-call")
+    #goblint_stats("unreach-call")
     #firstrun_toptime("no-overflow")
     #autotune_time("no-data-race")
     return
